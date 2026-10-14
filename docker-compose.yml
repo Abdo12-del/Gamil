@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  gamil-cloudpool:
+    build: .
+    container_name: gamil_cloudpool_app
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./storage_nodes:/app/storage_nodes
+    restart: unless-stopped
