@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gamil CloudPool — منصة التخزين السحابي الموحد والتوسع التلقائي</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <!-- الشريط العلوي -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand-box">
+        <div class="brand-logo">G</div>
+        <div class="brand-title">
+          <h1>
+            Gamil CloudPool
+            <span class="badge-free">توسع تلقائي في الخلفية 100%</span>
+          </h1>
+          <p id="headerSubtitleText">واجهة تخزين سحابية واحدة — يدير النظام الحسابات وتوسيع المساحة تلقائيًا في الخلفية دون تدخل يدوي</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <a href="/api/package/download" class="btn btn-violet" style="text-decoration:none;">
+          📦 تنزيل البرنامج المغلف (ZIP)
+        </a>
+        <button class="btn btn-emerald" id="modeToggleBtn" onclick="toggleUiMode()">
+          🔧 عرض لوحة المهندس المتقدمة (التفاصيل التقنية)
+        </button>
+        <button class="btn btn-outline btn-sm" onclick="resetDemoState()">
+          🔄 إعادة ضبط التجربة
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-container">
+    <!-- ========================================================================= -->
+    <!-- 1. الواجهة الرسومية المبسطة الموحدة (Simple Single-Pane Unified Mode)      -->
+    <!-- تعرض فقط: السعة الإجمالية، المساحة المستخدمة، وتقدم رفع الملفات + الملفات -->
+    <!-- ========================================================================= -->
+    <div id="simpleUnifiedView">
+      <section class="pool-banner" style="background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.1rem;">
+          <div>
+            <h2 style="font-size:1.25rem; color:#fff; display:flex; align-items:center; gap:0.5rem;">
+              <span>☁️ مساحتك السحابية الموحدة</span>
+              <span class="badge-free" id="simpleAutoscaleStatusBadge">🤖 التوسع التلقائي الخلفي: نشط</span>
+            </h2>
+            <p style="font-size:0.84rem; color:var(--text-secondary);">
+              ارفع ملفاتك بأي حجم؛ عند اقتراب المساحة من الامتلاء يوفّر النظام مساحة إضافية في الخلفية ويُكمل الرفع تلقائيًا.
+            </p>
+          </div>
+          <div style="text-align:left;">
+            <div style="font-size:1.65rem; font-weight:800; color:#34d399;" id="simpleTotalAndFreeText">--</div>
+            <div style="font-size:0.8rem; color:var(--text-secondary);" id="simpleUsedSummaryText">--</div>
+          </div>
+        </div>
+
+        <!-- شريط سعة موحد نظيف بدون تفاصيل حسابات معقدة -->
+        <div class="progress-track" style="height:18px; border-radius:999px; background:#090e1a;">
+          <div
+            class="progress-fill"
+            id="simpleUnifiedProgressBar"
+            style="width:0%; background: linear-gradient(90deg, #2563eb, #10b981); transition: width 0.5s ease;"
+          ></div>
+        </div>
+      </section>
+
+      <!-- منطقة الرفع الموحدة وشريط التقدم الحي القابل للاستئناف -->
+      <section class="content-card" style="margin-bottom:1.4rem;">
+        <div class="two-col-grid" style="align-items:center;">
+          <div>
+            <h3 style="font-size:1.08rem; margin-bottom:0.35rem;">⬆️ رفع الملفات (مع استئناف وتوسع تلقائي في الخلفية)</h3>
+            <p style="font-size:0.83rem; color:var(--text-secondary); margin-bottom:0.9rem;">
+              اختر ملفًا من جهازك أو جرّب محاكاة رفع ملف كبير يتجاوز المساحة المتبقية في الحساب الأول (15 GB) لترى كيف يتوسع النظام تلقائيًا ويكمل الرفع دون توقف:
+            </p>
+            <form onsubmit="handleSimpleModeFileUpload(event)" style="display:flex; gap:0.6rem; flex-wrap:wrap; margin-bottom:0.85rem;">
+              <input type="file" id="simpleFileInput" class="input-field" style="flex:1; min-width:200px;" required />
+              <select id="simpleFolderSelect" class="select-field" style="width:auto;">
+                <option value="/كتب">📁 /كتب</option>
+                <option value="/تسجيلات وميديا">📁 /تسجيلات وميديا</option>
+                <option value="/تقارير ومستندات NG Academy">📁 /تقارير ومستندات NG Academy</option>
+                <option value="/Google AI Studio">📁 /Google AI Studio</option>
+              </select>
+              <button type="submit" class="btn btn-primary">🚀 رفع الملف</button>
+            </form>
+
+            <div style="display:flex; gap:0.55rem; flex-wrap:wrap;">
+              <button
+                class="btn btn-emerald btn-sm"
+                onclick="runSeamlessAnimatedUpload('دورة_تعليمية_كاملة_عالية_الدقة.mp4', 8200, '/تسجيلات وميديا', 'gdrive_ngacademy_main')"
+              >
+                ⚡ تجربة عملية: رفع ملف (8.2 GB) لحسابك الأول (المتبقي فيه 6.6 GB فقط!)
+              </button>
+              <button
+                class="btn btn-violet btn-sm"
+                onclick="runSeamlessAnimatedUpload('حزمة_مناهج_الأكاديمية_الشاملة_2026.zip', 15500, '/كتب', null)"
+              >
+                📦 رفع أرشيف ضخم (15.5 GB) مع توسعة سحابية خفية
+              </button>
+            </div>
+          </div>
+
+          <!-- بطاقة شريط تقدم الرفع الحي -->
+          <div style="background:var(--bg-surface); border:1px solid var(--border-color); border-radius:12px; padding:1.15rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.45rem;">
+              <span style="font-weight:700; font-size:0.9rem;" id="liveUploadTitle">جاهز لرفع الملفات</span>
+              <span style="font-weight:800; color:#60a5fa; font-size:1.05rem;" id="liveUploadPercent">0%</span>
+            </div>
+            <div class="progress-track" style="height:14px; margin-bottom:0.55rem;">
+              <div
+                class="progress-fill"
+                id="liveUploadProgressBar"
+                style="width:0%; background: linear-gradient(90deg, #3b82f6, #10b981); transition: width 0.25s ease;"
+              ></div>
+            </div>
+            <div style="font-size:0.8rem; color:var(--text-secondary);" id="liveUploadStatusText">
+              لا توجد عمليات رفع جارية حاليًا — الرفع قابل للاستئناف تلقائيًا عند انقطاع الاتصال أو امتلاء إحدى المساحات.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- قائمة الملفات الموحدة في الوضع البسيط -->
+      <section class="content-card">
+        <div class="toolbar">
+          <h3 style="font-size:1.05rem;">📂 جميع ملفاتي (واجهة موحدة)</h3>
+          <div class="search-box" style="max-width:380px;">
+            <input
+              type="text"
+              id="simpleSearchInput"
+              class="input-field"
+              placeholder="🔍 ابحث في ملفاتك..."
+              oninput="syncSearchFromSimple()"
+            />
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="files-table">
+            <thead>
+              <tr>
+                <th>اسم الملف</th>
+                <th>المجلد</th>
+                <th>الحجم</th>
+                <th>التاريخ</th>
+                <th>إجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="simpleFilesTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 2. لوحة المهندس المتقدمة (Advanced Engineer Mode — كافة التبويبات التقنية) -->
+    <!-- ========================================================================= -->
+    <div id="advancedEngineerView" style="display:none;">
+      <section class="pool-banner">
+        <div class="stats-grid" id="poolStatsGrid">
+          <div class="stat-card">
+            <div class="stat-label">
+              <span>إجمالي السعة المجمعة (Union Pool)</span>
+              <span>☁️</span>
+            </div>
+            <div class="stat-value" id="statTotalPool">--</div>
+            <div class="stat-sub" id="statAccountsCount">عبر -- حسابات متصلة</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-label">
+              <span>المساحة الحرة القابلة للاستخدام</span>
+              <span>🟢</span>
+            </div>
+            <div class="stat-value" id="statFreePool" style="color: #34d399;">--</div>
+            <div class="stat-sub" id="statPolicyLabel">سياسة التوزيع النشطة: mfs</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-label">
+              <span>المساحة المستخدمة حاليًا</span>
+              <span>📊</span>
+            </div>
+            <div class="stat-value" id="statUsedPool">--</div>
+            <div class="stat-sub" id="statTotalFiles">-- ملف مفهرس في SQLite</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-label">
+              <span>المساحة المهدرة بالتكرار (MD5)</span>
+              <span>🧬</span>
+            </div>
+            <div class="stat-value" id="statWastedDupes" style="color: #fbbf24;">--</div>
+            <div class="stat-sub" id="statDupesCount">قابلة للاسترجاع بضغطة زر</div>
+          </div>
+        </div>
+
+        <div class="segmented-bar-wrap">
+          <div class="segmented-bar-header">
+            <span>توزيع إشغال المساحة الفعلي عبر الحسابات المدمجة (بما فيها الحسابات المُنشأة تلقائيًا)</span>
+            <span id="poolUtilizationText">--% مستخدم من إجمالي التجمع</span>
+          </div>
+          <div class="segmented-bar" id="segmentedPoolBar"></div>
+          <div class="segmented-legend" id="segmentedLegend"></div>
+        </div>
+      </section>
+
+      <section class="alerts-container" id="alertsContainer"></section>
+
+      <nav class="nav-tabs">
+        <button class="tab-btn active" data-tab="autoscale" onclick="switchTab('autoscale')">
+          <span>🤖</span> محرك التوسع التلقائي وأدوات GitHub (Auto-Scaler)
+        </button>
+        <button class="tab-btn" data-tab="explorer" onclick="switchTab('explorer')">
+          <span>📁</span> مدير الملفات التفصيلي (Union Explorer)
+        </button>
+        <button class="tab-btn" data-tab="accounts" onclick="switchTab('accounts')">
+          <span>🔐</span> إدارة الحسابات وخزنة OAuth 2.0
+        </button>
+        <button class="tab-btn" data-tab="upload" onclick="switchTab('upload')">
+          <span>🧭</span> محاكي التوزيع وتقسيم الملفات (Chunker)
+        </button>
+        <button class="tab-btn" data-tab="dedupe" onclick="switchTab('dedupe')">
+          <span>🧬</span> كاشف ومزيل التكرار (MD5 Dedupe)
+          <span class="tab-badge" id="dedupeTabBadge">0</span>
+        </button>
+        <button class="tab-btn" data-tab="rclone" onclick="switchTab('rclone')">
+          <span>⚙️</span> مولّد Rclone & Docker وسجل العمليات
+        </button>
+      </nav>
+
+      <!-- التبويب الجديد: محرك التوسع التلقائي وأدوات GitHub -->
+      <section class="tab-panel active" id="tab-autoscale">
+        <div class="two-col-grid">
+          <div class="content-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem; flex-wrap:wrap; gap:0.5rem;">
+              <h3 style="font-size:1.05rem;">🤖 خزنة الحسابات الاحتياطية ومحرك الإنشاء الآلي في الخلفية</h3>
+              <button class="btn btn-emerald btn-sm" onclick="triggerManualBackgroundProvision()">
+                ⚡ اختبار إنشاء وتفعيل حساب جديد في الخلفية الآن (+15 GB)
+              </button>
+            </div>
+            <p style="font-size:0.82rem; color:var(--text-secondary); margin-bottom:1rem;">
+              عندما يمتلئ أي حساب أثناء الرفع، يسحب النظام تلقائيًا حسابًا من هذه الخزنة الاحتياطية أو ينشئ عقدة جديدة عبر موصّلات GitHub (GAM / Casdoor / Rclone) دون إيقاف الرفع:
+            </p>
+            <div id="standbyPoolListContainer" style="margin-bottom:1.2rem;"></div>
+
+            <h4 style="font-size:0.92rem; margin-bottom:0.6rem;">➕ إضافة حساب احتياطي جديد إلى خزنة التوسع التلقائي:</h4>
+            <form onsubmit="submitStandbyAccount(event)" style="display:grid; grid-template-columns:1fr 1fr auto; gap:0.5rem;">
+              <input type="text" id="standbyNameInput" class="input-field" placeholder="اسم الحساب الاحتياطي" required />
+              <input type="email" id="standbyEmailInput" class="input-field" placeholder="standby@gmail.com" required />
+              <button type="submit" class="btn btn-primary btn-sm">إضافة للخزنة</button>
+            </form>
+          </div>
+
+          <div class="content-card">
+            <h3 style="font-size:1.05rem; margin-bottom:0.5rem;">🛠️ أدوات GitHub المدمجة لأتمتة الحسابات وجلسات الرفع المستأنف</h3>
+            <div id="githubDriversContainer" style="margin-bottom:1.2rem;"></div>
+
+            <h4 style="font-size:0.92rem; margin-bottom:0.5rem;">🔄 سجل جلسات الرفع المستأنفة والتوسع اللحظي (Resumable Sessions):</h4>
+            <div id="resumableSessionsContainer"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- التبويب 1: مدير الملفات التفصيلي -->
+      <section class="tab-panel" id="tab-explorer">
+        <div class="explorer-grid">
+          <aside class="sidebar-card">
+            <div class="sidebar-title">
+              <span>📂 المجلدات الموحدة (Union)</span>
+            </div>
+            <ul class="folder-list" id="virtualFoldersList"></ul>
+
+            <div class="sidebar-title">
+              <span>☁️ التصفية حسب الحساب</span>
+            </div>
+            <ul class="folder-list" id="accountFilterList"></ul>
+          </aside>
+
+          <div class="content-card">
+            <div class="toolbar">
+              <div class="search-box">
+                <input
+                  type="text"
+                  id="fileSearchInput"
+                  class="input-field"
+                  placeholder="🔍 ابحث فورًا في جميع الحسابات بالاسم أو المسار أو بصمة MD5..."
+                  oninput="loadFiles()"
+                />
+              </div>
+              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <select id="categoryFilterSelect" class="select-field" style="width: auto;" onchange="loadFiles()">
+                  <option value="all">جميع أنواع الملفات</option>
+                  <option value="pdf">📕 كتب وملفات PDF</option>
+                  <option value="video">🎬 تسجيلات فيديو (MP4)</option>
+                  <option value="doc">📝 مستندات وتقارير Google Docs</option>
+                  <option value="image">🖼️ صور وتصاميم (PNG/JPG)</option>
+                  <option value="archive">📦 ملفات مضغوطة وأجزاء مقسّمة (ZIP/Chunk)</option>
+                </select>
+                <button class="btn btn-outline btn-sm" onclick="resetExplorerFilters()">إعادة تعيين</button>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="files-table">
+                <thead>
+                  <tr>
+                    <th>اسم الملف والمسار الموحد</th>
+                    <th>الحساب المضيف فعليًا</th>
+                    <th>الحجم</th>
+                    <th>بصمة المحتوى (MD5)</th>
+                    <th>إجراءات ذكية</th>
+                  </tr>
+                </thead>
+                <tbody id="filesTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- التبويب 2: إدارة الحسابات وخزنة OAuth -->
+      <section class="tab-panel" id="tab-accounts">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+          <div>
+            <h2 style="font-size: 1.15rem;">الحسابات وعقد التخزين المرتبطة في التجمع</h2>
+            <p style="font-size: 0.84rem; color: var(--text-secondary);">
+              جميع رموز OAuth 2.0 (Access & Refresh Tokens) مشفرة محليًا بمعيار AES-256-GCM دون حفظ أي كلمات مرور.
+            </p>
+          </div>
+          <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+            <button class="btn btn-outline" onclick="openImportRcloneModal()">📥 استيراد من rclone.conf</button>
+            <button class="btn btn-emerald" onclick="openAddAccountModal()">➕ ربط حساب Google Drive أو تخزين جديد</button>
+          </div>
+        </div>
+
+        <div class="accounts-grid" id="accountsCardsGrid"></div>
+
+        <div class="two-col-grid">
+          <div class="content-card">
+            <h3 style="font-size: 1rem; margin-bottom: 0.4rem;">🔗 مولّد رابط Google OAuth 2.0 الرسمي (Production Offline Token)</h3>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.8rem;">
+              للحصول على رمز `refresh_token` دائم لا ينتهي كل 7 أيام، أنشئ معرّف عميل مجاني في Google Cloud Console بوضع <strong>In Production</strong> وأدخله هنا:
+            </p>
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem;">
+              <input
+                type="text"
+                id="gcpClientIdInput"
+                class="input-field"
+                placeholder="123456789-xxx.apps.googleusercontent.com"
+                value="YOUR_OWN_GCP_CLIENT_ID.apps.googleusercontent.com"
+              />
+              <button class="btn btn-primary btn-sm" onclick="generateOAuthLink()">توليد الرابط</button>
+            </div>
+            <div id="oauthUrlResultBox" style="font-size: 0.78rem; color: var(--text-secondary);"></div>
+          </div>
+
+          <div class="content-card">
+            <h3 style="font-size: 1rem; margin-bottom: 0.4rem;">📊 مراقب حصص Google Drive API (نموذج الوحدات الموزونة — مايو 2026)</h3>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.8rem;">
+              يراقب النظام استهلاك وحدات الحصة (Quota Units) وحد الـ 750 GB اليومي ومعدل الكتابة المستدام (3 writes/sec):
+            </p>
+            <div id="apiQuotaMonitorBox"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- التبويب 3: الرفع الذكي ومحاكي التوزيع -->
+      <section class="tab-panel" id="tab-upload">
+        <div class="two-col-grid">
+          <div class="content-card">
+            <h3 style="margin-bottom: 0.4rem;">⬆️ رفع ملف إلى المساحة الموحدة (مع التوجيه ومنع التكرار تلقائيًا)</h3>
+            <form id="realUploadForm" onsubmit="handleRealFileUpload(event)">
+              <div class="form-group">
+                <label class="form-label">اختر ملفًا من جهازك لرفعه وفحصه:</label>
+                <input type="file" id="uploadFileInput" class="input-field" required />
+              </div>
+
+              <div class="two-col-grid" style="gap: 0.75rem;">
+                <div class="form-group">
+                  <label class="form-label">المجلد الافتراضي الموحد:</label>
+                  <select id="uploadVirtualPath" class="select-field">
+                    <option value="/كتب">/كتب</option>
+                    <option value="/تقارير ومستندات NG Academy">/تقارير ومستندات NG Academy</option>
+                    <option value="/تسجيلات وميديا">/تسجيلات وميديا</option>
+                    <option value="/Google AI Studio">/Google AI Studio</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">توجيه الحساب (تلقائي أو يدوي):</label>
+                  <select id="uploadTargetAccount" class="select-field">
+                    <option value="auto">🤖 اختيار تلقائي ذكي (وفق سياسة Union)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem;">
+                <input type="checkbox" id="uploadForceDuplicate" />
+                <label for="uploadForceDuplicate" style="font-size: 0.82rem; color: var(--text-secondary);">
+                  تجاوز الحماية وإجبار الرفع حتى لو كان الملف مكررًا في حساب آخر
+                </label>
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                🚀 فحص البصمة الرقمية ورفع الملف الآن
+              </button>
+            </form>
+
+            <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 1.35rem 0;" />
+
+            <div style="display: flex; flex-wrap: wrap; gap: 0.55rem;">
+              <button class="btn btn-outline btn-sm" onclick="quickTestUpload('كتاب_منهج_القراءة_الحديث_2026.pdf', 85, '/كتب', 'unique_seed_' + Date.now())">
+                📘 رفع كتاب جديد (85 MB)
+              </button>
+              <button class="btn btn-violet btn-sm" onclick="quickTestChunkedUpload()">
+                🧩 تقسيم وتوزيع ملف ضخم (16 GB) عبر عدة حسابات
+              </button>
+              <button class="btn btn-amber btn-sm" onclick="quickTestDuplicateBlock()">
+                🛑 تجربة رفع ملف مكرر (اختبار الحماية)
+              </button>
+            </div>
+
+            <div id="uploadResultBox" style="margin-top: 1rem;"></div>
+          </div>
+
+          <div class="content-card">
+            <h3 style="margin-bottom: 0.4rem;">🧭 محاكي قرارات التوزيع وسياسات Rclone Union & Chunker</h3>
+            <div class="two-col-grid" style="gap: 0.75rem;">
+              <div class="form-group">
+                <label class="form-label">سياسة التوزيع المراد اختبارها:</label>
+                <select id="simPolicySelect" class="select-field" onchange="runPlacementSimulation()">
+                  <option value="mfs">mfs — الأكثر مساحة فارغة (Most Free Space)</option>
+                  <option value="epmfs">epmfs — الحفاظ على المسار مع الأكثر مساحة</option>
+                  <option value="lno">lno — الأقل عددًا في الملفات (Least Objects)</option>
+                  <option value="priority">priority — الأولوية المتدرجة</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">حجم الملف الافتراضي (بالميجابايت MB):</label>
+                <input
+                  type="number"
+                  id="simFileSizeMb"
+                  class="input-field"
+                  value="500"
+                  min="1"
+                  max="60000"
+                  oninput="runPlacementSimulation()"
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">المجلد الهدف:</label>
+              <select id="simVirtualPath" class="select-field" onchange="runPlacementSimulation()">
+                <option value="/كتب">/كتب</option>
+                <option value="/تسجيلات وميديا">/تسجيلات وميديا</option>
+                <option value="/تقارير ومستندات NG Academy">/تقارير ومستندات NG Academy</option>
+                <option value="/مجلد_جديد_كليًا">/مجلد_جديد_كليًا</option>
+              </select>
+            </div>
+
+            <div style="display: flex; gap: 0.6rem; margin-bottom: 1rem; flex-wrap: wrap;">
+              <button class="btn btn-primary btn-sm" onclick="runPlacementSimulation()">🔍 محاكاة القرار الآن</button>
+              <button class="btn btn-outline btn-sm" onclick="document.getElementById('simFileSizeMb').value = 18500; runPlacementSimulation();">
+                🧩 محاكاة ملف ضخم 18.5 GB
+              </button>
+              <button class="btn btn-emerald btn-sm" onclick="saveActivePolicyFromSim()">💾 اعتماد هذه السياسة</button>
+            </div>
+
+            <div id="simulationResultContainer"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- التبويب 4: كاشف ومزيل التكرار -->
+      <section class="tab-panel" id="tab-dedupe">
+        <div class="content-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.2rem;">
+            <div>
+              <h2 style="font-size: 1.15rem;">🧬 مركز اكتشاف وإزالة الملفات المكررة بالبصمة الرقمية (MD5 Content Hash)</h2>
+              <p style="font-size: 0.84rem; color: var(--text-secondary);">
+                يفحص البصمة الرقمية `md5Checksum` لجميع الملفات داخل كل حساب وعبر الحسابات المختلفة، حتى لو اختلف اسم الملف!
+              </p>
+            </div>
+            <button class="btn btn-emerald" onclick="cleanAllDuplicates()">
+              🧹 حذف كافة النسخ الزائدة واسترجاع المساحة الآن
+            </button>
+          </div>
+
+          <div id="duplicatesListContainer"></div>
+        </div>
+      </section>
+
+      <!-- التبويب 5: مولّد Rclone & OpenList وسجل العمليات -->
+      <section class="tab-panel" id="tab-rclone">
+        <div class="two-col-grid">
+          <div class="content-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; flex-wrap: wrap; gap: 0.5rem;">
+              <h3 style="font-size: 1rem;">⚙️ ملف `rclone.conf` الموحد (مُولّد تلقائيًا من حساباتك)</h3>
+              <div style="display: flex; gap: 0.45rem;">
+                <button class="btn btn-outline btn-sm" onclick="copyRcloneConfig()">📋 نسخ</button>
+                <a href="/api/rclone-config/download" class="btn btn-primary btn-sm">⬇️ تنزيل rclone.conf</a>
+              </div>
+            </div>
+            <pre class="code-box" id="rcloneConfCode" style="max-height: 260px;">جاري التحميل...</pre>
+
+            <h4 style="font-size: 0.92rem; margin: 1rem 0 0.45rem;">💻 أوامر التشغيل كقرص محلي (FUSE Mount) وخادم WebDAV لـ OpenList:</h4>
+            <pre class="code-box" id="rcloneCommandsCode" style="max-height: 170px;">جاري التحميل...</pre>
+
+            <h4 style="font-size: 0.92rem; margin: 1rem 0 0.45rem;">🐳 ملف `docker-compose.yml` للاستضافة الذاتية المتكاملة:</h4>
+            <pre class="code-box" id="dockerComposeCode" style="max-height: 200px;">جاري التحميل...</pre>
+          </div>
+
+          <div class="content-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+              <h3 style="font-size: 1rem;">📜 سجل العمليات الموحد والتوسع التلقائي (Audit Log)</h3>
+            </div>
+            <div id="auditLogsContainer" style="display: flex; flex-direction: column; gap: 0.65rem; max-height: 680px; overflow-y: auto;"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- نافذة إضافة حساب جديد (Modal) -->
+  <div class="modal-backdrop" id="addAccountModal">
+    <div class="modal-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h3>➕ ربط حساب تخزين جديد في المساحة الموحدة</h3>
+        <button class="btn btn-outline btn-sm" onclick="closeAddAccountModal()">✕</button>
+      </div>
+      <form onsubmit="submitNewAccount(event)">
+        <div class="form-group">
+          <label class="form-label">الاسم التعريفي للحساب:</label>
+          <input type="text" id="newAccName" class="input-field" placeholder="مثال: حساب أرشيف الدورات #4" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">البريد الإلكتروني أو معرّف الحساب:</label>
+          <input type="email" id="newAccEmail" class="input-field" placeholder="example4@gmail.com" required />
+        </div>
+        <div class="two-col-grid" style="gap: 0.75rem;">
+          <div class="form-group">
+            <label class="form-label">نوع المزود المجاني:</label>
+            <select id="newAccProvider" class="select-field">
+              <option value="google_drive">Google Drive (15 GB Free OAuth)</option>
+              <option value="local_disk">عقدة تخزين محلي / WebDAV</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">السعة الإجمالية (GB):</label>
+            <input type="number" id="newAccTotalGb" class="input-field" value="15" min="1" max="5000" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">رمز OAuth Refresh Token (اختياري — يُشفر فورًا بـ AES-256-GCM):</label>
+          <input type="password" id="newAccRefreshToken" class="input-field" placeholder="1//0g... (اتركه فارغًا لتوليد رمز جلسة محلي)" />
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.6rem; margin-top: 1rem;">
+          <button type="button" class="btn btn-outline" onclick="closeAddAccountModal()">إلغاء</button>
+          <button type="submit" class="btn btn-emerald">🔐 تشفير الرموز وربط الحساب</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- نافذة استيراد ملف rclone.conf (Modal) -->
+  <div class="modal-backdrop" id="importRcloneModal">
+    <div class="modal-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+        <h3>📥 استيراد حسابات من ملف `rclone.conf`</h3>
+        <button class="btn btn-outline btn-sm" onclick="closeImportRcloneModal()">✕</button>
+      </div>
+      <div class="form-group">
+        <textarea
+          id="rcloneImportTextarea"
+          class="input-field"
+          rows="7"
+          style="direction: ltr; text-align: left; font-family: monospace; font-size: 0.78rem;"
+        >[gdrive_backup_4]
+type = drive
+scope = drive
+token = {"access_token":"ya29.sample_imported_token","refresh_token":"1//0g_sample_refresh_token"}</textarea>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 0.6rem;">
+        <button type="button" class="btn btn-outline" onclick="closeImportRcloneModal()">إلغاء</button>
+        <button type="button" class="btn btn-emerald" onclick="submitImportRclone()">📥 استيراد وتشفير الحسابات</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- نافذة نقل ملف بين الحسابات (Modal) -->
+  <div class="modal-backdrop" id="moveFileModal">
+    <div class="modal-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h3>⇄ نقل الملف بين الحسابات مع بقائه في الواجهة الموحدة</h3>
+        <button class="btn btn-outline btn-sm" onclick="closeMoveFileModal()">✕</button>
+      </div>
+      <input type="hidden" id="moveFileIdInput" />
+      <p id="moveFileNameLabel" style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 1rem;"></p>
+      <div class="form-group">
+        <label class="form-label">اختر الحساب الهدف للنقل إليه:</label>
+        <select id="moveTargetAccountSelect" class="select-field"></select>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 0.6rem; margin-top: 1.2rem;">
+        <button type="button" class="btn btn-outline" onclick="closeMoveFileModal()">إلغاء</button>
+        <button type="button" class="btn btn-primary" onclick="confirmMoveFile()">🚀 تنفيذ النقل الآن</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- حاوية الإشعارات الفورية -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

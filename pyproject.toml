@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gamil-cloudpool"
+version = "2.0.0"
+description = "منصة التخزين السحابي الموحد والتوسع التلقائي الخلفي في واجهة واحدة"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+dependencies = [
+    "fastapi>=0.110.0",
+    "uvicorn>=0.29.0",
+    "python-multipart>=0.0.9",
+    "cryptography>=42.0.0",
+    "httpx>=0.27.0",
+    "google-api-python-client>=2.120.0",
+    "google-auth-oauthlib>=1.2.0",
+    "casdoor>=1.22.0",
+    "faker>=22.0.0",
+    "pymailtm>=1.1.0",
+]
+
+[project.scripts]
+gamil-cloudpool = "run:main"
+
+[tool.setuptools]
+py-modules = ["run"]
+packages = ["backend", "backend.github_projects"]
